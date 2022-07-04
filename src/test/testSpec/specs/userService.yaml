@@ -1,0 +1,170 @@
+userEndpoints:
+  get:
+    summary: Get data of current user
+    operationId: user:data:get
+    description: |-
+      Get the data of the currently logged in user.
+
+      Data are initialized on first request with default values or are empty.
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/user.yaml#/UserDataResponse'
+      "401":
+        description: Unauthorized
+      "500":
+        description: Internal Server Error
+    x-accepts: application/json
+    x-tira: true
+    security:
+      - jwt: []
+    tags:
+      - user-service
+  put:
+    summary: Update data of the authenticated user
+    operationId: user:data:update
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/UpdateUserModel'
+    responses:
+      "200":
+        description: User data successfully updated. Returns the new user data object with changes applied
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/user.yaml#/UserDataResponse'
+      "401":
+        description: Unauthorized
+      "422":
+        description: Unprocessable entity. Validation of request body failed.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/user.yaml#/ValidationError'
+      "500":
+        description: "Internal server error"
+    x-accepts: application/json
+    x-contentType: application/json
+    security:
+      - jwt: []
+    tags:
+      - user-service
+  delete:
+    summary: Delete data of the authenticated user
+    description: |-
+      This endpoints deletes all individual user data and settings.
+
+      On the next request of an authenticated user, the data with default values will become reinitialized.
+
+      On success, the endpoint returns a `204 No Content` response with no body.
+    operationId: user:data:delete
+    responses:
+      "204":
+        description: User data deleted.
+      "500":
+        description: Internal Server Error
+    security:
+      - jwt: []
+    tags:
+      - user-service
+### TPL RENDER {{ template "servers.tpl" "users" }}
+  servers:
+    - url: https://users.api.{environment}.mindtastic.lol
+      variables:
+        environment:
+          enum:
+            - live
+            - stage
+            - dev
+          default: live
+### END RENDER {{ template "servers.tpl" "users" }}
+
+adminEndpoints:
+  get:
+    summary: Get all users.
+    description: |-
+      This endpoint returns all users with settings stored.
+
+      The endpoint is only accessible by administrators and considered **unstable**.
+    operationId: user:admin:getAll
+    deprecated: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/UpdateUserModel'
+    responses:
+      '201':
+        description: User successfully created
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../schemas/user.yaml#/UserDataResponse'
+      '401':
+        description: Unauthorized
+      '500':
+        description: Internal Server Error
+    tags:
+      - user-service
+    x-accepts: application/json
+  post:
+    summary: Create user.
+    description: |-
+      Creates a user with provided request data.
+
+      The ID comes from a header that will be dropped by the API gateway. Therefore, user creation is only
+      accessible from inside the service mesh.
+
+      The endpoint is only accessible by administrators and considered **unstable**.
+    operationId: user:admin:create
+    deprecated: true
+    parameters:
+      - name: X-User-Id
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: |-
+          The service specific user id of the user to create.
+
+          **Caution:**
+          The user id MUST NOT be the users account key nor a authentication session token.
+        example: 7f036688-36c2-4d73-80c7-a820fcf156a6
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/UpdateUserModel'
+    responses:
+      '200':
+        description: OK
+      '201':
+        description: Created
+      '401':
+        description: Unauthorized
+      '422':
+        description: Unprocessable Entity
+      '500':
+        description: Internal Server Error
+    x-contentType: application/json
+    tags:
+      - user-service
+### TPL RENDER {{ template "servers.tpl" "users" }}
+  servers:
+    - url: https://users.api.{environment}.mindtastic.lol
+      variables:
+        environment:
+          enum:
+            - live
+            - stage
+            - dev
+          default: live
+### END RENDER {{ template "servers.tpl" "users" }}

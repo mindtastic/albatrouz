@@ -1,0 +1,31 @@
+registration:
+  description: Registration initialization
+  type: object
+  x-examples:
+    example-1:
+      flow: 231125d7-11d5-4e0f-80e9-5081003ae8ca
+  properties:
+    flow:
+      type: string
+      format: uuid
+      minLength: 36
+      maxLength: 36
+
+registration-with-flow-id-request:
+  description: Registration with FlowID
+  type: object
+  required:
+    - method
+  method:
+    type: string
+    pattern: password
+
+registration-with-flow-id-response:
+  title: Registration Response
+  description: Registration with FlowID
+  type: object
+  properties:
+    identity:
+      $ref: './kratos_t.yaml#/identity'
+    session:
+      $ref: './kratos_t.yaml#/session'
