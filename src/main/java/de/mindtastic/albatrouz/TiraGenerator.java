@@ -1,26 +1,25 @@
-package de.kopfsachen.openapi.tira;
+package de.mindtastic.albatrouz;
 
+import com.google.common.collect.ImmutableMap;
+import com.samskivert.mustache.Mustache;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.openapitools.codegen.*;
-import org.openapitools.codegen.meta.features.*;
-import org.openapitools.codegen.templating.mustache.OnChangeLambda;
 import org.openapitools.codegen.meta.GeneratorMetadata;
 import org.openapitools.codegen.meta.Stability;
+import org.openapitools.codegen.meta.features.*;
+import org.openapitools.codegen.model.ModelMap;
+import org.openapitools.codegen.model.OperationsMap;
+import org.openapitools.codegen.serializer.SerializerUtils;
+import org.openapitools.codegen.templating.mustache.OnChangeLambda;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap.Builder;
-import com.samskivert.mustache.Mustache.Lambda;
-import org.openapitools.codegen.model.ModelMap;
-import org.openapitools.codegen.model.ModelsMap;
-import org.openapitools.codegen.model.OperationsMap;
-import io.swagger.v3.oas.models.Operation;
+import org.yaml.snakeyaml.serializer.Serializer;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
     public final String OUTPUT_NAME = "outputFile";
@@ -64,8 +63,20 @@ public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
         embeddedTemplateDir = templateDir = "tira";
         apiPackage = File.separator + "Apis";
 
-        // Merged main specification
         cliOptions.add(CliOption.newString(OUTPUT_NAME, "Merged spec output filename").defaultValue(outputFile));
+    }
+
+    /**
+     * Method that processes a Map of operations, enhanced with more attributes depending on the values in this
+     * generator. The result will be used to populate the individual API template files.
+     * @see DefaultGenerator
+     * @param objs
+     * @param allModels
+     * @return
+     */
+    @Override
+    public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
+        return super.postProcessOperationsWithModels(objs, allModels);
     }
 
     @Override
@@ -79,7 +90,7 @@ public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
     }
 
     @Override
-    protected Builder<String, Lambda> addMustacheLambdas() {
+    protected ImmutableMap.Builder<String, Mustache.Lambda> addMustacheLambdas() {
         return super.addMustacheLambdas()
                 .put("onchange", new OnChangeLambda());
     }
@@ -98,43 +109,5 @@ public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
     @Override
     public String escapeUnsafeCharacters(String input) {
         return input;
-    }
-
-/*    @Override
-    public File processTemplateToFile(Map<String, Object> templateData, String templateName, String outputFilename, boolean shouldGenerate, String skippedByOption) throws IOException {
-        // Do we write an API file?
-        if (skippedByOption.equals(CodegenConstants.APIS)) {
-            Map<String, Object> yamlSpecObj = buildSingleApiSpec();
-            String yaml = SerializerUtils.toYamlString(yamlSpecObj);
-            if (yaml != null) {
-                templateData.put("api-openapi-yaml", yaml);
-            } else {
-                LOGGER.warn("Failed to generate individual API spec");
-            }
-        }   
-
-        return super.processTemplateToFile(templateData, templateName, outputFilename, shouldGenerate, skippedByOption, this.config.getOutputDir());
-    }*/
-
-    private Map<String, Object> buildSingleApiSpec(Map<String, Object> inputData) {
-        Map<String, Object> apiSpec = new HashMap<String, Object>();
-
-        // Create info section
-        apiSpec.put("info", Map.of(
-            "title", inputData.get("baseName"),
-            "contact", Map.of(
-                "name", inputData.get("infoName"),
-                "url", inputData.get("infoUrl"),
-                "email", inputData.get("infoEmail")
-            ),
-            "description", inputData.get("appDescription"),
-            "license", Map.of(
-                "name", inputData.get("licenseInfo"),
-                "url", inputData.get("licenseUrl")
-            ),
-            "version", inputData.get("version")
-        ));
-
-        return apiSpec;
     }
 }
