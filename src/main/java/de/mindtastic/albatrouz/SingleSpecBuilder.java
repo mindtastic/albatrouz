@@ -36,6 +36,9 @@ public class SingleSpecBuilder {
                 .map(mapper::mapServer)
                 .forEach(spec::addServersItem);
 
+        // We do not print openapi version number
+        spec.setOpenapi(null);
+
         return spec;
     }
 

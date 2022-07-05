@@ -77,6 +77,7 @@ public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
     @Override
     public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
         SingleSpecBuilder builder = SingleSpecBuilder.buildSpecFromServiceProps(objs, allModels);
+        objs.put("api-spec-yaml", builder.buildYaml());
         return super.postProcessOperationsWithModels(objs, allModels);
     }
 
