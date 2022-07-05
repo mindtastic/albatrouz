@@ -22,6 +22,7 @@
                             <rules>
                                 <requireMavenVersion>
                                     <version>2.2.0</version>
+
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -104,6 +105,19 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.openapitools.codegen.OpenAPIGenerator</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptors>
+                        <descriptor>src/assembly/dep.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
         </plugins>
         <testResources>
             <testResource>
@@ -117,6 +131,12 @@
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
             <version>${openapi-generator-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>openapi-generator-cli</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
