@@ -22,7 +22,6 @@
                             <rules>
                                 <requireMavenVersion>
                                     <version>2.2.0</version>
-
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
