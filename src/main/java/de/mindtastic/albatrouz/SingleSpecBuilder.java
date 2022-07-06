@@ -38,6 +38,7 @@ public class SingleSpecBuilder {
     public String buildYaml() {
         return Serializer.forSpec(buildSpec())
                 .withoutOpenApiField()
+                .withoutNullValues()
                 .asYAML();
     }
 

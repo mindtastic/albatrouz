@@ -1,5 +1,6 @@
 package de.mindtastic.albatrouz.serialization;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -11,6 +12,8 @@ import org.openapitools.codegen.config.GlobalSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import static java.util.Map.entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -21,8 +24,17 @@ public class Serializer {
     private boolean minimizeYamlQuotes = Boolean.parseBoolean(GlobalSettings.getProperty(
             YAML_MINIMIZE_QUOTES_PROPERTY, "true"
     ));
+    private boolean dropOpenApiField = false;
+    private boolean includeNullValues = true;
+    private JsonInclude.Include inclusionRule = JsonInclude.Include.ALWAYS;
 
-    private boolean dropOpenApiField;
+    private Map<YAMLGenerator.Feature, Boolean> yamlFeatures = Map.ofEntries(
+            entry(YAMLGenerator.Feature.MINIMIZE_QUOTES, Boolean.parseBoolean(GlobalSettings.getProperty(
+                    YAML_MINIMIZE_QUOTES_PROPERTY, "true"
+            ))),
+            entry(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false)
+    );
+
 
     private OpenAPI spec;
 
@@ -35,6 +47,7 @@ public class Serializer {
                     .findFirst()
                     .orElseThrow()
                     .build()
+                    .setSerializationInclusion(inclusionRule)
                     .writeValueAsString(spec)
                     .replace("\r\n", "\n");
 
@@ -77,13 +90,23 @@ public class Serializer {
         return this;
     }
 
+    public Serializer withNullValues() {
+        inclusionRule = JsonInclude.Include.ALWAYS;
+        return this;
+    }
+
+    public Serializer withoutNullValues() {
+        inclusionRule = JsonInclude.Include.NON_NULL;
+        return this;
+    }
+
     public Serializer minimizeQuotes() {
-        minimizeYamlQuotes = true;
+        yamlFeatures.put(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
         return this;
     }
 
     public Serializer withoutMinimizingQuotes() {
-        minimizeYamlQuotes = false;
+        yamlFeatures.put(YAMLGenerator.Feature.MINIMIZE_QUOTES, false);
         return this;
     }
 
@@ -102,27 +125,15 @@ public class Serializer {
         return s;
     }
 
-    /*
-    protected ObjectMapper yamlMapper() {
-        if (yamlMapper == null) {
-            yamlMapper = Yaml.mapper().copy();
-            applyYamlSettings();
-        }
-
-        return yamlMapper;
+    protected YAMLMapper.Builder applyYamlSettings(YAMLMapper.Builder b) {
+        yamlFeatures.forEach((key, value) -> setFeatureActive(b, key, value));
+        return b;
     }
 
-    protected YAMLFactory yamlFactory() {
-        return (YAMLFactory) yamlMapper().getFactory();
-    }
-    */
-
-    protected YAMLMapper.Builder applyYamlSettings(YAMLMapper.Builder m) {
-        Optional.of(minimizeYamlQuotes)
+    protected void setFeatureActive(YAMLMapper.Builder b, YAMLGenerator.Feature f, boolean enable) {
+        Optional.of(enable)
                 .filter(Boolean::booleanValue)
-                .map(b -> m.enable(YAMLGenerator.Feature.MINIMIZE_QUOTES))
-                .orElseGet(() -> m.disable(YAMLGenerator.Feature.MINIMIZE_QUOTES));
-
-        return m;
+                .map(v -> b.enable(f))
+                .orElseGet(() -> b.disable(f));
     }
 }
