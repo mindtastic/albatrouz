@@ -1,18 +1,14 @@
 package de.mindtastic.albatrouz;
 
+import de.mindtastic.albatrouz.serialization.Serializer;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.servers.Server;
-import org.checkerframework.checker.units.qual.s;
 import org.openapitools.codegen.CodegenModel;
 import org.openapitools.codegen.CodegenServer;
 import org.openapitools.codegen.model.ModelMap;
 import org.openapitools.codegen.model.OperationMap;
 import org.openapitools.codegen.model.OperationsMap;
-import org.openapitools.codegen.serializer.SerializerUtils;
 
-import javax.swing.text.html.Option;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SingleSpecBuilder {
     private final OpenApiMapper mapper = new OpenApiMapper();
@@ -36,14 +32,13 @@ public class SingleSpecBuilder {
                 .map(mapper::mapServer)
                 .forEach(spec::addServersItem);
 
-        // We do not print openapi version number
-        spec.setOpenapi(null);
-
         return spec;
     }
 
     public String buildYaml() {
-        return SerializerUtils.toYamlString(buildSpec());
+        return Serializer.forSpec(buildSpec())
+                .withoutOpenApiField()
+                .asYAML();
     }
 
      public static SingleSpecBuilder buildSpecFromServiceProps(OperationsMap objs, List<ModelMap> models) {
