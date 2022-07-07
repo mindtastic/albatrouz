@@ -1,68 +1,58 @@
 package de.mindtastic.albatrouz;
 
+import de.mindtastic.albatrouz.openapi.PathsFilterer;
 import de.mindtastic.albatrouz.serialization.Serializer;
 import io.swagger.v3.oas.models.OpenAPI;
-import org.openapitools.codegen.CodegenModel;
-import org.openapitools.codegen.CodegenServer;
-import org.openapitools.codegen.model.ModelMap;
 import org.openapitools.codegen.model.OperationMap;
 import org.openapitools.codegen.model.OperationsMap;
 
-import java.util.*;
+import java.util.List;
 
 public class SingleSpecBuilder {
-    private final OpenApiMapper mapper = new OpenApiMapper();
 
-    private OperationMap operations;
-    private List<String> importPaths;
+    /**
+     * The full OpenAPI spec where the single specs shall be built from
+     */
+    protected OpenAPI baseSpec;
 
-    private List<CodegenModel> usedModels;
+    protected OperationMap operations;
 
-    protected SingleSpecBuilder(OperationsMap operations) {
-        this.operations = operations.getOperations();
-        this.importPaths = operations.getImports().stream()
-                .map(importMap -> importMap.get("import"))
-                .toList();
+    protected SingleSpecBuilder(OpenAPI spec) {
+        baseSpec = spec;
     }
+
 
     public OpenAPI buildSpec() {
         OpenAPI spec = new OpenAPI();
+        spec.openapi(baseSpec.getOpenapi());
+        spec.info(baseSpec.getInfo().title(operations.getClassname()));
 
-        getServers().stream()
-                .map(mapper::mapServer)
-                .forEach(spec::addServersItem);
+        List<String> operationIds = operations.getOperation().stream()
+                .map(op -> op.operationIdOriginal)
+                .toList();
+
+        // Filter all operations from base spec that do not belong to the currently request single spec
+        var paths = baseSpec.getPaths();
+        spec.paths(PathsFilterer.forPaths(baseSpec.getPaths()).filterOperationIds(operationIds));
 
         return spec;
     }
 
+
     public String buildYaml() {
         return Serializer.forSpec(buildSpec())
-                .withoutOpenApiField()
+                .withOpenApiField()
                 .withoutNullValues()
                 .asYAML();
     }
 
-     public static SingleSpecBuilder buildSpecFromServiceProps(OperationsMap objs, List<ModelMap> models) {
-        SingleSpecBuilder builder = new SingleSpecBuilder(objs);
-        builder.usedModels = models.stream()
-                .filter(builder::usesModel)
-                .map(ModelMap::getModel)
-                .toList();
-
-        return builder;
+     public SingleSpecBuilder forOperations(OperationsMap objs) {
+        operations = objs.getOperations();
+        return this;
     }
 
-    public boolean usesModel(ModelMap model) {
-        return Optional.ofNullable(model.get("importPath"))
-                .isPresent();
-    }
-
-    public List<CodegenServer> getServers() {
-        return operations.getOperation().stream()
-                .map(op -> op.servers)
-                .distinct()
-                .min(Comparator.comparing(List::size))
-                .orElse(Collections.emptyList());
+    public static SingleSpecBuilder fromSpec(OpenAPI spec) {
+        return new SingleSpecBuilder(spec);
     }
 
 }

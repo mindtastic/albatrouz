@@ -2,19 +2,15 @@ package de.mindtastic.albatrouz;
 
 import com.google.common.collect.ImmutableMap;
 import com.samskivert.mustache.Mustache;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.meta.GeneratorMetadata;
 import org.openapitools.codegen.meta.Stability;
 import org.openapitools.codegen.meta.features.*;
 import org.openapitools.codegen.model.ModelMap;
 import org.openapitools.codegen.model.OperationsMap;
-import org.openapitools.codegen.serializer.SerializerUtils;
 import org.openapitools.codegen.templating.mustache.OnChangeLambda;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.serializer.Serializer;
 
 import java.io.File;
 import java.util.EnumSet;
@@ -76,8 +72,11 @@ public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
      */
     @Override
     public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
-        SingleSpecBuilder builder = SingleSpecBuilder.buildSpecFromServiceProps(objs, allModels);
-        objs.put("api-spec-yaml", builder.buildYaml());
+        String apiSpecYaml = SingleSpecBuilder.fromSpec(this.openAPI)
+                                .forOperations(objs)
+                                .buildYaml();
+
+        objs.put("api-spec-yaml", apiSpecYaml);
         return super.postProcessOperationsWithModels(objs, allModels);
     }
 
