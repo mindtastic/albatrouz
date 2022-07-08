@@ -32,7 +32,8 @@ public class Serializer {
             entry(YAMLGenerator.Feature.MINIMIZE_QUOTES, Boolean.parseBoolean(GlobalSettings.getProperty(
                     YAML_MINIMIZE_QUOTES_PROPERTY, "true"
             ))),
-            entry(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false)
+            entry(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false),
+            entry(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true)
     );
 
 

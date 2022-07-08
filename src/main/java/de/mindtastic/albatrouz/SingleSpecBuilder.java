@@ -32,7 +32,6 @@ public class SingleSpecBuilder {
                 .toList();
 
         // Filter all operations from base spec that do not belong to the currently request single spec
-        var paths = baseSpec.getPaths();
         spec.paths(PathsFilterer.forPaths(baseSpec.getPaths()).filterOperationIds(operationIds));
 
         return spec;
