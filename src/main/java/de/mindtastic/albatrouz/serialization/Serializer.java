@@ -7,6 +7,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import io.swagger.v3.core.jackson.mixin.MediaTypeMixin;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.core.jackson.mixin.SchemaMixin;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.openapitools.codegen.config.GlobalSettings;
 import org.slf4j.Logger;
@@ -26,7 +31,7 @@ public class Serializer {
     ));
     private boolean dropOpenApiField = false;
     private boolean includeNullValues = true;
-    private JsonInclude.Include inclusionRule = JsonInclude.Include.ALWAYS;
+    private JsonInclude.Include inclusionRule = JsonInclude.Include.USE_DEFAULTS;
 
     private Map<YAMLGenerator.Feature, Boolean> yamlFeatures = Map.ofEntries(
             entry(YAMLGenerator.Feature.MINIMIZE_QUOTES, Boolean.parseBoolean(GlobalSettings.getProperty(
@@ -36,7 +41,6 @@ public class Serializer {
             entry(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true)
     );
 
-
     private OpenAPI spec;
 
     public String asYAML() {
@@ -44,11 +48,11 @@ public class Serializer {
             return Stream.of(YAMLMapper.builder())
                     .map(b -> b.addModule(serializerModule()))
                     .map(b -> b.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true))
+                    .map(this::applyYamlSerializationConfig)
                     .map(this::applyYamlSettings)
                     .findFirst()
                     .orElseThrow()
                     .build()
-                    .setSerializationInclusion(inclusionRule)
                     .writeValueAsString(spec)
                     .replace("\r\n", "\n");
 
@@ -128,6 +132,14 @@ public class Serializer {
 
     protected YAMLMapper.Builder applyYamlSettings(YAMLMapper.Builder b) {
         yamlFeatures.forEach((key, value) -> setFeatureActive(b, key, value));
+        return b;
+    }
+
+    protected YAMLMapper.Builder applyYamlSerializationConfig(YAMLMapper.Builder b) {
+        //b.serializationInclusion(inclusionRule);
+        b.serializationInclusion(JsonInclude.Include.CUSTOM);
+        b.addMixIn(Schema.class, SchemaMixin.class);
+        b.addMixIn(MediaType.class, MediaTypeMixin.class);
         return b;
     }
 

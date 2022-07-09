@@ -31,7 +31,6 @@ public class PathsFilterer {
                 .filter(ent -> !ent.getValue().readOperations().isEmpty())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 .forEach(filtered::addPathItem);
-
         return filtered;
     }
 
