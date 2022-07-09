@@ -26,4 +26,3 @@ runs:
   args:
     - -g tira
     - -i ${{ inputs.openapi-file }}
-    - -o ./${{inputs.templatedir }}
