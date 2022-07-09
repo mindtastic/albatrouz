@@ -13,7 +13,7 @@ COPY ./src ${BUILD_DIR}/src
 # Increase the stack size, otherwise the assembly stage runs into a stackoverflow exception
 ENV MAVEN_OPTS "-Xss2m ${MAVEN_OPTS}"
 RUN cd ${BUILD_DIR} && \
-    mvn compile assembly:assembly 
+    mvn compile assembly:single 
 
 # Run environment
 FROM openjdk:18-jdk
