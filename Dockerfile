@@ -1,7 +1,7 @@
 # Build project on a maven container
 FROM maven:3.8.6-openjdk-18 AS builder
 
-ARG GITHUB_WORKSPACE=/build
+ARG GITHUB_WORKSPACE=/albatrouz
 ARG BUILD_DIR=${GITHUB_WORKSPACE}
 
 # Create directory if not exists on github
@@ -17,9 +17,10 @@ RUN cd ${BUILD_DIR} && \
 
 # Run environment
 FROM openjdk:18-jdk
-ARG GITHUB_WORKSPACE=/build
-ARG BUILD_DIR=${GITHUB_WORKSPACE}
 
-COPY --from=builder ["${BUILD_DIR}/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "./openapi-generator.jar"]
+ARG GITHUB_WORKSPACE=/albatrouz
+ENV ALBATROUZ_DIR=${GITHUB_WORKSPACE}
 
-ENTRYPOINT [ "java", "-jar", "openapi-generator.jar" ]
+COPY --from=builder ["${ALBATROUZ_DIR}/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "${ALBATROUZ_DIR}/openapi-generator.jar"]
+
+ENTRYPOINT [ "bash", "-c", "java -jar ${ALBATROUZ_DIR}/openapi-generator.jar" ]
