@@ -24,6 +24,7 @@ runs:
   using: docker
   image: Dockerfile
   args:
+    - generate
     - -g tira
     - -i ${{ inputs.openapi-file }}
     - -o ./${{ inputs.outputdir }}
