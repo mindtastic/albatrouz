@@ -20,6 +20,6 @@ FROM openjdk:18-jdk
 ARG GITHUB_WORKSPACE=/build
 ARG BUILD_DIR=${GITHUB_WORKSPACE}
 
-COPY --from=builder ["${BUILD_DIR}/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "/openapi-generator.jar"]
+COPY --from=builder ["${BUILD_DIR}/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "./openapi-generator.jar"]
 
-ENTRYPOINT [ "java", "-jar", "/openapi-generator.jar" ]
+ENTRYPOINT [ "java", "-jar", "openapi-generator.jar" ]
