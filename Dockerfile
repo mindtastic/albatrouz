@@ -6,6 +6,8 @@ WORKDIR /build
 COPY ./pom.xml ./pom.xml
 COPY ./src ./src
 
+# Increase the stack size, otherwise the assembly stage runs into a stackoverflow exception
+RUN export MAVEN_OPTS="-Xss2m $MAVEN_OPTS"
 RUN mvn compile assembly:assembly 
 
 # Run environment
