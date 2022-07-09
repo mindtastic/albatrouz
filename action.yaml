@@ -1,5 +1,6 @@
 name: "Albatrouz Transparency OpenAPI generator"
-description: "Uses mindtastic/albatrouz, an extended version of openapi-generator to generate per-service OpenAPI yaml spec and transparency information in the Transparency Information Toolkit format as proposed by Grünewald, Pallas et. al. in https://doi.org/10.1145/3442188.3445925."
+description: |-
+  Uses mindtastic/albatrouz, an extended version of openapi-generator to generate per-service OpenAPI yaml spec and transparency information in the Transparency Information Toolkit format as proposed by Grünewald, Pallas et. al. in https://doi.org/10.1145/3442188.3445925.
 
 branding:
   icon: 'eye'
@@ -18,7 +19,6 @@ inputs:
     description: The output directory where the generated files should go to.
     required: false
     default: albatrouz-out
-  
    
 runs:
   using: docker
