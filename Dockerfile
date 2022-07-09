@@ -1,20 +1,25 @@
 # Build project on a maven container
 FROM maven:3.8.6-openjdk-18 AS builder
 
-WORKDIR /build
+ARG GITHUB_WORKSPACE=/build
+ARG BUILD_DIR=${GITHUB_WORKSPACE}
 
-COPY ./pom.xml ./pom.xml
-COPY ./src ./src
+# Create directory if not exists on github
+RUN mkdir -p ${BUILD_DIR}
+
+COPY ./pom.xml ${BUILD_DIR}/pom.xml
+COPY ./src ${BUILD_DIR}/src
 
 # Increase the stack size, otherwise the assembly stage runs into a stackoverflow exception
 ENV MAVEN_OPTS "-Xss2m ${MAVEN_OPTS}"
-RUN mvn compile assembly:assembly 
+RUN cd ${BUILD_DIR} && \
+    mvn compile assembly:assembly 
 
 # Run environment
 FROM openjdk:18-jdk
+ARG GITHUB_WORKSPACE=/build
+ARG BUILD_DIR=${GITHUB_WORKSPACE}
 
-WORKDIR /app
+COPY --from=builder ["${BUILD_DIR}/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "/openapi-generator.jar"]
 
-COPY --from=builder ["/build/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "./openapi-generator.jar"]
-
-ENTRYPOINT [ "java", "-jar", "openapi-generator.jar" ]
+ENTRYPOINT [ "java", "-jar", "/openapi-generator.jar" ]
