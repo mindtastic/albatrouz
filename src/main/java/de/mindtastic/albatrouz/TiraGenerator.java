@@ -56,6 +56,7 @@ public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
         // Subspecs
         outputFolder = "generated-code" + File.separator + "tira";
         apiTemplateFiles.put("api.mustache", ".yaml");
+        apiTemplateFiles.put("service-tilt.mustache", ".tilt");
         embeddedTemplateDir = templateDir = "tira";
         apiPackage = File.separator + "Apis";
 
@@ -77,6 +78,7 @@ public class TiraGenerator extends DefaultCodegen implements CodegenConfig {
                                 .buildYaml();
 
         objs.put("api-spec-yaml", apiSpecYaml);
+        objs.put("api-spec-tilt", "Yep. This will be tilt in the future");
         return super.postProcessOperationsWithModels(objs, allModels);
     }
 
