@@ -13,7 +13,7 @@ COPY ./src ${BUILD_DIR}/src
 # Increase the stack size, otherwise the assembly stage runs into a stackoverflow exception
 ENV MAVEN_OPTS "-Xss2m ${MAVEN_OPTS}"
 RUN cd ${BUILD_DIR} && \
-    mvn compile assembly:assembly 
+    mvn compile assembly:single 
 
 # Run environment
 FROM openjdk:18-jdk
@@ -23,4 +23,8 @@ ENV ALBATROUZ_DIR=${GITHUB_WORKSPACE}
 
 COPY --from=builder ["${ALBATROUZ_DIR}/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "${ALBATROUZ_DIR}/openapi-generator.jar"]
 
-ENTRYPOINT [ "bash", "-c", "java -jar ${ALBATROUZ_DIR}/openapi-generator.jar" ]
+# Setup entrypoint.sh and make it executable
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
