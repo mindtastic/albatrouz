@@ -5,8 +5,13 @@ import path from 'path';
 // import commentForOctokit from './comment';
 
 const getAlbatrouzFiles = async (dir: string): Promise<string[]> => {
-  const files = await readdir(dir);
-  const apiFiles = await readdir(path.join(dir, 'Apis'));
+  const files = (await readdir(dir))
+    .map((paths) => path.join(dir, paths));
+
+  const apiDir = path.join(dir, 'Apis');
+  const apiFiles = (await readdir(apiDir))
+    .map((paths) => (path.join(apiDir, paths)));
+
   return files.concat(apiFiles).filter((f) => f.endsWith('.yaml') || f.endsWith('.tilt'));
 };
 
@@ -20,6 +25,7 @@ async function run(): Promise<void> {
 
   const artifacts = artifact.create();
   const albatrouzFiles = await getAlbatrouzFiles(albatrouzOutDir);
+  console.log(albatrouzFiles);
   const responses = await Promise.all(albatrouzFiles.map((f) => (
     artifacts.uploadArtifact(path.basename(f), [f], albatrouzOutDir)
   )));

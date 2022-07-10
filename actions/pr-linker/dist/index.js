@@ -48,8 +48,11 @@ const promises_1 = __nccwpck_require__(3292);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 // import commentForOctokit from './comment';
 const getAlbatrouzFiles = (dir) => __awaiter(void 0, void 0, void 0, function* () {
-    const files = yield (0, promises_1.readdir)(dir);
-    const apiFiles = yield (0, promises_1.readdir)(path_1.default.join(dir, 'Apis'));
+    const files = (yield (0, promises_1.readdir)(dir))
+        .map((paths) => path_1.default.join(dir, paths));
+    const apiDir = path_1.default.join(dir, 'Apis');
+    const apiFiles = (yield (0, promises_1.readdir)(apiDir))
+        .map((paths) => (path_1.default.join(apiDir, paths)));
     return files.concat(apiFiles).filter((f) => f.endsWith('.yaml') || f.endsWith('.tilt'));
 });
 function run() {
