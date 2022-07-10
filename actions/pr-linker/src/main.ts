@@ -1,6 +1,5 @@
 import * as core from '@actions/core';
-// import { getOctokit } from '@actions/github';
-import artifact from '@actions/artifact';
+import * as artifact from '@actions/artifact';
 import { readdir } from 'fs/promises';
 import path from 'path';
 // import commentForOctokit from './comment';
@@ -20,7 +19,8 @@ async function run(): Promise<void> {
   // const comments = commentForOctokit(octokit);
 
   const artifacts = artifact.create();
-  const responses = await Promise.all((await getAlbatrouzFiles(albatrouzOutDir)).map((f) => (
+  const albatrouzFiles = await getAlbatrouzFiles(albatrouzOutDir);
+  const responses = await Promise.all(albatrouzFiles.map((f) => (
     artifacts.uploadArtifact(path.basename(f), [f], albatrouzOutDir)
   )));
 
