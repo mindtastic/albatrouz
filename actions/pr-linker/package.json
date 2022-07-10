@@ -7,7 +7,9 @@
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
-    "all": "npm run build && npm run lint && npm run package"
+    "clean": "rm -rf lib/",
+    "clean:all": "npm run clean && rm -rf dist/",
+    "all": "npm run build && npm run lint && npm run package && npm run clean"
   },
   "repository": {
     "type": "git",
