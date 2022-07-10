@@ -61,6 +61,7 @@ function run() {
         // const comments = commentForOctokit(octokit);
         const artifacts = artifact.create();
         const albatrouzFiles = yield getAlbatrouzFiles(albatrouzOutDir);
+        console.log(albatrouzFiles);
         const responses = yield Promise.all(albatrouzFiles.map((f) => (artifacts.uploadArtifact(path_1.default.basename(f), [f], albatrouzOutDir))));
         responses.forEach((uploadResponse) => {
             if (uploadResponse.failedItems.length > 0) {
