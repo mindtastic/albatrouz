@@ -24,7 +24,7 @@ ENV ALBATROUZ_DIR=${GITHUB_WORKSPACE}
 COPY --from=builder ["${ALBATROUZ_DIR}/target/tira-openapi-generator-1.0.0-jar-with-dependencies.jar", "${ALBATROUZ_DIR}/openapi-generator.jar"]
 
 # Setup entrypoint.sh and make it executable
-COPY ./entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT [ "./entrypoint.sh" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
