@@ -40,5 +40,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: ${{ failure() && steps.diff.conclusion == 'failure' }}
         with:
-          name: actions/pr-linker/dist
+          name: pr-linker.dist
           path: actions/pr-linker/dist/
