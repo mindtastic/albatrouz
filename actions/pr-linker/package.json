@@ -2,7 +2,7 @@
   "name": "albatrouz-pr-linker",
   "version": "0.2.0",
   "description": "Albatrouz GitHub action PR helper",
-  "main": "index.js",
+  "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
