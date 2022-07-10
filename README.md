@@ -2,6 +2,10 @@
 
 Praise the albatrouz. It got [TILT](https://github.com/Transparency-Information-Language/meta)-Wings
 
+- [What is this](#what-is-this-for)
+- [How to build](#build)
+- [GitHub Actions](#github-action)
+
 ## What is this for?
 
 The albatross will tell you for himself. Volume up and tilt around the house! 🦅
@@ -90,3 +94,23 @@ As the `.jar` is set as entrypoint of the built image, running  `docker run` and
 ```bash
 docker run --rm -v $(pwd):/openapi albatrouz generate -g tira -i /openapi/openapi.yaml -o /openapi/outDir
 ```
+
+## GitHub Action
+
+Albatrouz provides multiple github action that makes it usable from other OpenAPI repositories.
+
+## Albatrouz action
+
+This is the repositories base action. It will run albatrouz and generates
+
+- One full service `openapi.yaml` specs.
+- An individual `ServiceAPI.yaml` spec for each service in the given OpenAPI spec. All Paths with the same `tag` are considered as *one service*.
+- Individual, per-service `Service.tilt` TILT specifications file.
+
+TODO: Add documentation
+
+## Albatrouz PR linker
+
+This action makes it easier to deal with albatrouz in a PR. It takes an albatrouz output dir as a directory, scans through the folder structure and uploads all generated specs as GitHub artifacts. It then creates a PR comment linking to these artifacts.
+
+TODO: Add documentation
