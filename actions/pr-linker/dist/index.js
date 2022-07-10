@@ -43,8 +43,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
-// import { getOctokit } from '@actions/github';
-const artifact_1 = __importDefault(__nccwpck_require__(2605));
+const artifact = __importStar(__nccwpck_require__(2605));
 const promises_1 = __nccwpck_require__(3292);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 // import commentForOctokit from './comment';
@@ -60,8 +59,9 @@ function run() {
         const albatrouzOutDir = core.getInput('albatrouz-out', { required: true });
         // const octokit = getOctokit(repoToken);
         // const comments = commentForOctokit(octokit);
-        const artifacts = artifact_1.default.create();
-        const responses = yield Promise.all((yield getAlbatrouzFiles(albatrouzOutDir)).map((f) => (artifacts.uploadArtifact(path_1.default.basename(f), [f], albatrouzOutDir))));
+        const artifacts = artifact.create();
+        const albatrouzFiles = yield getAlbatrouzFiles(albatrouzOutDir);
+        const responses = yield Promise.all(albatrouzFiles.map((f) => (artifacts.uploadArtifact(path_1.default.basename(f), [f], albatrouzOutDir))));
         responses.forEach((uploadResponse) => {
             if (uploadResponse.failedItems.length > 0) {
                 core.warning(`Upload of artifact ${uploadResponse.artifactName} failed.`);
