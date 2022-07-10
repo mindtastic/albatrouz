@@ -1,0 +1,22 @@
+name: Build PR linker
+on:
+  pull_request:
+  
+  push:
+    branches: ["main"]
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project files
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        working-directory: 'actions/pr-linker'
+        run: npm ci
+
+      - name: Test, Lint and Build
+        working-directory: 'actions/pr-linker'
+        run: npm run all
+
