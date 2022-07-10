@@ -11,10 +11,10 @@ inputs:
     description: The path to the OpenAPI document you want to process
     required: false
     default: openapi.yaml
-  templatedir:
-    description: If custom templates should be used, set the path to the templatedir here. See https://openapi-generator.tech/docs/templating for more information
-    required: false
-    default: UNSET
+  # templatedir:
+  #   description: If custom templates should be used, set the path to the templatedir here. See https://openapi-generator.tech/docs/templating for more information
+  #   required: false
+  #   default: UNSET
   outputdir:
     description: The output directory where the generated files should go to.
     required: false
@@ -25,6 +25,9 @@ runs:
   image: Dockerfile
   args:
     - generate
-    - -g tira
-    - -i ${{ inputs.openapi-file }}
-    - -o ./${{ inputs.outputdir }}
+    - -g
+    - tira
+    - -i 
+    - ${{ inputs.openapi-file }}
+    - -o 
+    - ${{ inputs.outputdir }}
