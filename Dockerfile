@@ -27,4 +27,4 @@ COPY --from=builder ["${ALBATROUZ_DIR}/target/tira-openapi-generator-1.0.0-jar-w
 COPY ./entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
-ENTRYPOINT [ "entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]
