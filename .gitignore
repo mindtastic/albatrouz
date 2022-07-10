@@ -313,7 +313,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+
 
 # Gatsby files
 .cache/
@@ -360,4 +360,8 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+# Ignore ts intermediary files
+actions/**/lib
+
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,intellij
