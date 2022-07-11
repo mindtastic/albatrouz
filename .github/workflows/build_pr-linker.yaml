@@ -1,0 +1,44 @@
+name: Build PR linker
+  
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project files
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        working-directory: 'actions/pr-linker'
+        run: npm ci
+
+      - name: Test, Lint and Build
+        working-directory: 'actions/pr-linker'
+        run: npm run all
+
+      - name: Compare the expected and actual dist/ directories
+        working-directory: 'actions/pr-linker'
+        run: |
+          if [ "$(git diff --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
+            echo "Detected uncommitted changes after build.  See status below:"
+            git diff
+            exit 1
+          fi
+        id: diff
+
+      # If index.js was different than expected, upload the expected version as an artifact
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() && steps.diff.conclusion == 'failure' }}
+        with:
+          name: pr-linker.dist
+          path: actions/pr-linker/dist/

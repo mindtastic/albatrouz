@@ -1,0 +1,10 @@
+name: 'Upload Albatrouz output and link in PR'
+description: 'Upload albatrouz artifacts and link the in a comment in the pull requests'
+inputs:
+  albatrouz-out:
+    description: The albatrouz output directory
+    required: true
+    default: 'albatrouz-out'
+runs:
+  using: node16
+  main: dist/index.js
